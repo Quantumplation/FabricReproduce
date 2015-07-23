@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ActorA.Interfaces;
 using ActorB.Interfaces;
+using EventStore.Interfaces;
 using Microsoft.ServiceFabric.Actors;
 
 namespace ActorB
@@ -25,12 +26,12 @@ namespace ActorB
         public async Task Test()
         {
             ActorEventSource.Current.ActorMessage(this, "Test Start");
-            await ActorProxy.Create<IActorA>(new ActorId(0)).EnqueuMessage(this);
+            await ActorProxy.Create<IEventStore>(new ActorId(0)).PutMessage();
 
             ActorEventSource.Current.ActorMessage(this, "Test End");
         }
 
-        public async Task Act(IActorA actor)
+        public async Task Act(IEventStore actor)
         {
 
             ActorEventSource.Current.ActorMessage(this, "Act Start");

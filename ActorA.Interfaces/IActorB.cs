@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ActorA.Interfaces;
+using EventStore.Interfaces;
 using Microsoft.ServiceFabric.Actors;
 
 namespace ActorB.Interfaces
@@ -11,6 +12,6 @@ namespace ActorB.Interfaces
     public interface IActorB : IActor
     {
         Task Test();
-        Task Act(IActorA actor);
+        Task Act(IEventStore actor);
     }
 }

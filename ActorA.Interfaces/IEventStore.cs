@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ActorB.Interfaces;
 using Microsoft.ServiceFabric.Actors;
 
-namespace ActorA.Interfaces
+namespace EventStore.Interfaces
 {
-    public interface IActorA : IActor
+    public interface IEventStore : IActor
     {
-        Task Awake();
+        Task PutMessage();
+        Task<bool> IsMessageReceived();
+        Task Succeed();
     }
 }

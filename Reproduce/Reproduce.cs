@@ -26,6 +26,7 @@ namespace Reproduce
             // Meanwhile:
             // Timer -> ActorA.Process -> ActorB.Act -> ActorA.Success
             //                                       ^-- Deadlock happens here
+            await ActorProxy.Create<IActorA>(new ActorId(0)).Awake();
             await ActorProxy.Create<IActorB>(new ActorId(0)).Test();
         }
     }

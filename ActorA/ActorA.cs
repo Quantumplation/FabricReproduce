@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ActorA.Interfaces;
 using ActorB.Interfaces;
+using EventStore.Interfaces;
 using Microsoft.ServiceFabric;
 using Microsoft.ServiceFabric.Actors;
 
@@ -24,13 +25,10 @@ namespace ActorA
             return Task.FromResult(true);
         }
 
-        public Task EnqueuMessage(IActorB actor)
+
+        public async Task Awake()
         {
-
-            ActorEventSource.Current.ActorMessage(this, "Enqueue");
-            State.Message = actor;
-            return Task.FromResult(0);
-
+            
         }
 
         async Task Process(object notUsed)
@@ -41,21 +39,15 @@ namespace ActorA
             // If not, then I have an "EventHub" actor with a priority queue processing events as they
             // become relevant.  This class mimics that.
             ActorEventSource.Current.ActorMessage(this, "Process Start");
-            if (State.Message != null && State.Sent == false)
+            var store = ActorProxy.Create<IEventStore>(new ActorId(0));
+            if (await store.IsMessageReceived() && !State.Sent)
             {
-                await State.Message.Act(this);
-                // Even if just executing with a hard coded actor id, as below, the two block on eachother
-                // await ActorProxy.Create<IActorB>(new ActorId(0)).Act(this);
+                await ActorProxy.Create<IActorB>(new ActorId(0)).Act(store);
                 State.Sent = true;
             }
 
             ActorEventSource.Current.ActorMessage(this, "Process End");
         }  
 
-        public Task Succeed()
-        {
-            ActorEventSource.Current.ActorMessage(this, "SUCCESS");
-            return Task.FromResult(0);
-        }
     }
 }
